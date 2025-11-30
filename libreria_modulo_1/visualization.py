@@ -10,10 +10,78 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from scipy import stats
 from typing import Optional
+import os
+from datetime import datetime
+
+
+def _ensure_plots_directory():
+    """
+    Asegurar que el directorio plots/ existe.
+    
+    Returns
+    -------
+    str
+        Ruta del directorio plots/
+    """
+    plots_dir = "plots"
+    if not os.path.exists(plots_dir):
+        os.makedirs(plots_dir)
+        print(f"📁 Directorio '{plots_dir}' creado para guardar gráficos")
+    return plots_dir
+
+
+def _save_plot(fig, plot_name: str, save_plot: bool = True):
+    """
+    Guardar gráfico en múltiples formatos.
+    
+    Parameters
+    ----------
+    fig : plotly.graph_objects.Figure
+        Figura de Plotly a guardar.
+    plot_name : str
+        Nombre base del archivo (sin extensión).
+    save_plot : bool, default True
+        Si guardar el gráfico automáticamente.
+        
+    Returns
+    -------
+    dict
+        Diccionario con las rutas de los archivos guardados.
+    """
+    if not save_plot:
+        return {}
+    
+    plots_dir = _ensure_plots_directory()
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    base_filename = f"{plot_name}_{timestamp}"
+    
+    saved_files = {}
+    
+    try:
+        # Guardar como HTML (interactivo)
+        html_path = os.path.join(plots_dir, f"{base_filename}.html")
+        fig.write_html(html_path)
+        saved_files['html'] = html_path
+        
+        # Guardar como PNG (estático)
+        png_path = os.path.join(plots_dir, f"{base_filename}.png")
+        fig.write_image(png_path, width=1200, height=800, scale=2)
+        saved_files['png'] = png_path
+        
+        print(f"💾 Gráfico guardado:")
+        print(f"   📊 HTML interactivo: {html_path}")
+        print(f"   🖼️  PNG estático: {png_path}")
+        
+    except Exception as e:
+        print(f"⚠️  Error guardando gráfico: {str(e)}")
+        print("💡 Instala kaleido para guardar imágenes: pip install kaleido")
+    
+    return saved_files
 
 
 def plot_interactive_histogram(df: pd.DataFrame, column: str, group_by: Optional[str] = None, 
-                             add_kde: bool = True, bins: int = 30, title: Optional[str] = None):
+                             add_kde: bool = True, bins: int = 30, title: Optional[str] = None,
+                             save_plot: bool = True):
     """
     Histograma interactivo con línea de densidad y KDE, customizable por grupo.
     
@@ -31,6 +99,8 @@ def plot_interactive_histogram(df: pd.DataFrame, column: str, group_by: Optional
         Número de bins para el histograma.
     title : Optional[str], default None
         Título personalizado para el gráfico.
+    save_plot : bool, default True
+        Si guardar automáticamente el gráfico en la carpeta plots/.
         
     Returns
     -------
@@ -78,11 +148,20 @@ def plot_interactive_histogram(df: pd.DataFrame, column: str, group_by: Optional
                                            line=dict(width=3, dash='dash')))
     
     fig.update_layout(bargap=0.1)
+    
+    # Guardar gráfico automáticamente
+    if save_plot:
+        plot_name = f"histogram_{column}"
+        if group_by:
+            plot_name += f"_by_{group_by}"
+        _save_plot(fig, plot_name, save_plot)
+    
     return fig
 
 
 def plot_interactive_boxplot(df: pd.DataFrame, column: str, group_by: Optional[str] = None,
-                           target_class: Optional[str] = None, title: Optional[str] = None):
+                           target_class: Optional[str] = None, title: Optional[str] = None,
+                           save_plot: bool = True):
     """
     Boxplot interactivo con subgráficos por clase objetivo.
     
@@ -98,6 +177,8 @@ def plot_interactive_boxplot(df: pd.DataFrame, column: str, group_by: Optional[s
         Nombre de la columna de clase objetivo para crear subgráficos.
     title : Optional[str], default None
         Título personalizado para el gráfico.
+    save_plot : bool, default True
+        Si guardar automáticamente el gráfico en la carpeta plots/.
         
     Returns
     -------
@@ -134,6 +215,15 @@ def plot_interactive_boxplot(df: pd.DataFrame, column: str, group_by: Optional[s
             fig = px.box(df, y=column, x=group_by, title=title, points='outliers')
         else:
             fig = px.box(df, y=column, title=title, points='outliers')
+    
+    # Guardar gráfico automáticamente
+    if save_plot:
+        plot_name = f"boxplot_{column}"
+        if group_by:
+            plot_name += f"_by_{group_by}"
+        if target_class:
+            plot_name += f"_class_{target_class}"
+        _save_plot(fig, plot_name, save_plot)
     
     return fig
 
@@ -604,7 +694,7 @@ def plot_interactive_violin_swarm(df: pd.DataFrame, column: str, group_by: str,
 def plot_interactive_correlation_heatmap(df: pd.DataFrame, method: str = 'pearson',
                                        annot: bool = True, title: Optional[str] = None,
                                        max_variables: int = 20, show_only_significant: bool = False,
-                                       threshold: float = 0.3):
+                                       threshold: float = 0.3, save_plot: bool = True):
     """
     Heatmap de correlación interactivo con anotaciones y selección de método.
     
@@ -624,6 +714,8 @@ def plot_interactive_correlation_heatmap(df: pd.DataFrame, method: str = 'pearso
         Si mostrar solo las correlaciones que superen el umbral de significancia.
     threshold : float, default 0.3
         Umbral mínimo de correlación absoluta para considerar significativa.
+    save_plot : bool, default True
+        Si guardar automáticamente el gráfico en la carpeta plots/.
         
     Returns
     -------
@@ -741,5 +833,11 @@ def plot_interactive_correlation_heatmap(df: pd.DataFrame, method: str = 'pearso
         margin=dict(l=100, r=100, t=100, b=100)
     )
     
+    # Guardar gráfico automáticamente
+    if save_plot:
+        plot_name = f"correlation_heatmap_{method}"
+        if show_only_significant:
+            plot_name += f"_threshold_{threshold}"
+        _save_plot(fig, plot_name, save_plot)
     
     return fig

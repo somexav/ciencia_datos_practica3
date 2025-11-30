@@ -12,6 +12,7 @@ scikit-learn==1.7.2
 plotly==6.3.1
 matplotlib==3.10.7
 seaborn==0.13.2
+kaleido>=0.2.1
 nbformat==5.10.4
 
 # ===== SCIENTIFIC COMPUTING =====
@@ -25,4 +26,13 @@ ipywidgets==8.1.7
 
 # ===== UTILITY PACKAGES =====
 typing-extensions>=4.5.0
+
+# ===== TESTING =====
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# ===== VERSIONS NOTES =====
+# Versiones exactas verificadas y funcionales al 30/11/2025
+# Para instalar versiones exactas: pip install -r requirements.txt
+# Para versiones flexibles, cambiar == por >=
 

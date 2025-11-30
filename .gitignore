@@ -1,0 +1,38 @@
+
+
+# Cache de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de entorno
+.env
+.venv
+env/
+venv/
+
+# Reportes de cobertura
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Archivos de log
+*.log
