@@ -4,57 +4,75 @@ Funciones para generar estadísticas descriptivas y análisis automático
 """
 
 import pandas as pd
-import polars as pl
-import numpy as np
-from typing import Dict, List, Optional, Tuple
+from typing import Dict
 
 
 def completitud_datos(df: pd.DataFrame) -> pd.Series:    
-    """Calcula el porcentaje de completitud de datos para DataFrames de Pandas.
+    """
+    Calcula el porcentaje de completitud de datos para DataFrames de Pandas.
     
     Esta función analiza cada columna del DataFrame y calcula el porcentaje de 
     valores nulos presentes, ordenados de mayor a menor porcentaje de nulos.
     
-    Args:
-        df (pd.DataFrame): DataFrame de pandas a analizar.
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas a analizar.
         
-    Returns:
-        pd.Series: Serie de pandas con los nombres de las columnas como índice
-            y los porcentajes de valores nulos (entre 0.0 y 1.0) como valores,
-            ordenados de mayor a menor porcentaje de nulos.
-            
-    Example:
-        >>> import pandas as pd
-        >>> data = {'A': [1, 2, None], 'B': [4, None, None]}
-        >>> df = pd.DataFrame(data)
-        >>> resultado = completitud_datos(df)
-        >>> print(resultado)
-        B    0.6667
-        A    0.3333
-        dtype: float64
+    Returns
+    -------
+    pd.Series
+        Serie de pandas con los nombres de las columnas como índice
+        y los porcentajes de valores nulos (entre 0.0 y 1.0) como valores,
+        ordenados de mayor a menor porcentaje de nulos.
+        
     """
     return round(df.isnull().sum().sort_values(ascending=False) / df.shape[0], 4)
 
 
 def check_data_completeness_JavierMartinezReyes(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
-    """Análisis completo de completitud y características de los datos.
+    """
+    Análisis completo de completitud y características de los datos.
     
     Esta función realiza un análisis exhaustivo del DataFrame, clasificando
     automáticamente las columnas y proporcionando estadísticos detallados.
     
-    Args:
-        df (pd.DataFrame): DataFrame de pandas a analizar.
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas a analizar.
         
-    Returns:
-        Dict[str, pd.DataFrame]: Diccionario con los siguientes DataFrames:
-            - 'resumen_general': Información general de completitud y tipos
-            - 'estadisticos_dispersion': Estadísticos para variables numéricas
-            - 'clasificacion_variables': Clasificación automática de variables
-            
-    Example:
-        >>> resultado = check_data_completeness_JavierMartinezReyes(df)
-        >>> print(resultado['resumen_general'])
-        >>> print(resultado['clasificacion_variables'])
+    Returns
+    -------
+    Dict[str, pd.DataFrame]
+        Diccionario con los siguientes DataFrames:
+        
+        - 'resumen_general' : pd.DataFrame
+            Información general de completitud, tipos de datos y clasificación
+            de variables para cada columna.
+        - 'estadisticos_dispersion' : pd.DataFrame
+            Estadísticos descriptivos detallados para variables numéricas,
+            incluyendo medidas de tendencia central, dispersión y posición.
+        - 'clasificacion_variables' : pd.DataFrame
+            Clasificación automática de variables según su tipo y características,
+            con criterios de clasificación detallados.
+        
+    Notes
+    -----
+    La función clasifica automáticamente las variables en:
+    
+    - Variables numéricas:
+        - 'Continua': más de 10 valores únicos
+        - 'Discreta': 10 o menos valores únicos
+    
+    - Variables categóricas:
+        - 'Categórica_Baja': 10 o menos valores únicos
+        - 'Categórica_Media': entre 11 y 50 valores únicos
+        - 'Categórica_Alta': más de 50 valores únicos
+        
+    La función también imprime un resumen completo en consola con estadísticas
+    generales del DataFrame y clasificación de variables.
+        
     """
     
     # 1. Información básica del DataFrame

@@ -6,20 +6,31 @@ Funciones para limpieza, imputación y tratamiento de valores atípicos
 import pandas as pd
 import numpy as np
 from sklearn.impute import KNNImputer
-from sklearn.preprocessing import LabelEncoder
 
 def agrega_nan(datos: pd.DataFrame, min_frac: float = 0.0, max_frac: float = 0.3, seed: int = None) -> pd.DataFrame:
-    """Agregar valores NaN aleatoriamente para simular datos faltantes
+    """
+    Agregar valores NaN aleatoriamente para simular datos faltantes.
     
-    ---
-    Parameters:
-    datos: DataFrame de pandas
-    min_frac: fracción mínima de valores NaN por columna (0-1)
-    max_frac: fracción máxima de valores NaN por columna (0-1)
-    seed: semilla para reproducibilidad (opcional)
-    ---
-    Returns:
-    DataFrame con valores NaN agregados aleatoriamente
+    Parameters
+    ----------
+    datos : pd.DataFrame
+        DataFrame de pandas al cual se le agregarán valores NaN.
+    min_frac : float, default 0.0
+        Fracción mínima de valores NaN por columna (entre 0 y 1).
+    max_frac : float, default 0.3
+        Fracción máxima de valores NaN por columna (entre 0 y 1).
+    seed : int, optional
+        Semilla para reproducibilidad de los valores aleatorios.
+        
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con valores NaN agregados aleatoriamente.
+        
+    Raises
+    ------
+    ValueError
+        Si las fracciones no están entre 0 y 1, o si min_frac > max_frac.
     """
     if seed is not None:
         np.random.seed(seed)
@@ -40,15 +51,28 @@ def delete_missing_values(df: pd.DataFrame, porcentage: float ) -> pd.DataFrame:
     Elimina las COLUMNAS de un DataFrame que tienen un porcentaje de valores faltantes
     mayor al especificado.
     
-    ---
-    Parameters:
-    
-    df: DataFrame de pandas
-    porcentage: porcentaje máximo de valores faltantes permitidos por columna (0-1)
-               Ejemplo: 0.2 significa que se eliminan columnas con más del 20% de NaN
-    ---
-    Returns:
-    DataFrame filtrado sin las columnas que exceden el porcentaje de valores faltantes
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas a procesar.
+    porcentage : float
+        Porcentaje máximo de valores faltantes permitidos por columna (entre 0 y 1).
+        Ejemplo: 0.2 significa que se eliminan columnas con más del 20% de NaN.
+        
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame filtrado sin las columnas que exceden el porcentaje de valores faltantes.
+        
+    Raises
+    ------
+    ValueError
+        Si el porcentaje no está entre 0 y 1.
+        
+    Notes
+    -----
+    La función imprime información detallada sobre el proceso de filtrado,
+    incluyendo el número de columnas eliminadas y las estadísticas finales.
     """
     if porcentage < 0 or porcentage > 1:
         raise ValueError("El porcentaje debe estar entre 0 y 1")
@@ -91,12 +115,31 @@ def impute_missing_values(df: pd.DataFrame, method: str = 'auto') -> pd.DataFram
     """
     Imputa valores faltantes usando diferentes métodos según el tipo de variable.
     
-    Parameters:
-    df: DataFrame de pandas
-    method: método de imputación ('auto', 'mean', 'median', 'mode', 'knn')
-    
-    Returns:
-    DataFrame con valores faltantes imputados
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas con valores faltantes a imputar.
+    method : str, default 'auto'
+        Método de imputación a utilizar. Opciones:
+        - 'auto': media para numéricas, moda para categóricas
+        - 'mean': media para variables numéricas
+        - 'median': mediana para variables numéricas
+        - 'knn': K-Nearest Neighbors para numéricas, moda para categóricas
+        
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con valores faltantes imputados.
+        
+    Raises
+    ------
+    ValueError
+        Si el método especificado no es reconocido.
+        
+    Notes
+    -----
+    La función imprime información sobre el proceso de imputación para cada columna,
+    incluyendo el método utilizado y los valores de relleno aplicados.
     """
     df = df.copy()
     print(f"Valores faltantes antes de imputar:\n{df.isnull().sum().sum()} en total")
@@ -162,13 +205,29 @@ def detect_outliers_iqr(df: pd.DataFrame, columns: list = None, factor: float = 
     """
     Detecta outliers usando el método IQR (Rango Intercuartílico).
     
-    Parameters:
-    df: DataFrame de pandas
-    columns: lista de columnas a analizar (si es None, analiza todas las numéricas)
-    factor: factor multiplicador para el IQR (1.5 es estándar)
-    
-    Returns:
-    DataFrame con información sobre outliers
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas a analizar.
+    columns : list, optional
+        Lista de nombres de columnas a analizar. Si es None, analiza todas las columnas numéricas.
+    factor : float, default 1.5
+        Factor multiplicador para el IQR. El valor estándar es 1.5.
+        
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con información detallada sobre outliers por columna, incluyendo:
+        - Cuartiles Q1 y Q3
+        - Rango intercuartílico (IQR)
+        - Límites inferior y superior
+        - Número y porcentaje de outliers
+        
+    Notes
+    -----
+    El método IQR define como outliers los valores que están fuera del rango
+    [Q1 - factor*IQR, Q3 + factor*IQR], donde Q1 y Q3 son el primer y tercer
+    cuartil respectivamente.
     """
     if columns is None:
         columns = df.select_dtypes(include=[np.number]).columns.tolist()
@@ -203,13 +262,27 @@ def detect_outliers_zscore(df: pd.DataFrame, columns: list = None, threshold: fl
     """
     Detecta outliers usando el método Z-Score.
     
-    Parameters:
-    df: DataFrame de pandas
-    columns: lista de columnas a analizar (si es None, analiza todas las numéricas)
-    threshold: umbral del z-score (valores > threshold son outliers)
-    
-    Returns:
-    DataFrame con información sobre outliers
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas a analizar.
+    columns : list, optional
+        Lista de nombres de columnas a analizar. Si es None, analiza todas las columnas numéricas.
+    threshold : float, default 3.0
+        Umbral del z-score. Valores con |z-score| > threshold se consideran outliers.
+        
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con información detallada sobre outliers por columna, incluyendo:
+        - Media y desviación estándar
+        - Umbral utilizado
+        - Número y porcentaje de outliers
+        
+    Notes
+    -----
+    El método Z-Score identifica outliers basándose en cuántas desviaciones estándar
+    se aleja un valor de la media. Se asume que los datos siguen una distribución normal.
     """
     if columns is None:
         columns = df.select_dtypes(include=[np.number]).columns.tolist()
@@ -236,14 +309,29 @@ def remove_outliers(df: pd.DataFrame, method: str = 'iqr', columns: list = None,
     """
     Elimina outliers del DataFrame.
     
-    Parameters:
-    df: DataFrame de pandas
-    method: método a usar ('iqr' o 'zscore')
-    columns: columnas a considerar
-    **kwargs: argumentos adicionales para los métodos de detección
-    
-    Returns:
-    DataFrame sin outliers
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas del cual eliminar outliers.
+    method : str, default 'iqr'
+        Método a usar para detectar outliers ('iqr' o 'zscore').
+    columns : list, optional
+        Lista de columnas a considerar para la detección de outliers.
+        Si es None, considera todas las columnas numéricas.
+    **kwargs : dict
+        Argumentos adicionales para los métodos de detección:
+        - Para 'iqr': 'factor' (default 1.5)
+        - Para 'zscore': 'threshold' (default 3.0)
+        
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame sin los outliers detectados.
+        
+    Notes
+    -----
+    La función imprime estadísticas sobre el proceso de eliminación,
+    incluyendo el número de filas eliminadas y el porcentaje del total.
     """
     df_clean = df.copy()
     

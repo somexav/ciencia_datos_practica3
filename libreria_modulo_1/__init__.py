@@ -5,12 +5,36 @@ Librería de Análisis Exploratorio de Datos
 Esta librería proporciona herramientas completas para el análisis exploratorio de datos,
 incluyendo preprocesamiento, visualización y análisis estadístico.
 
-Módulos disponibles:
-- preprocessing: Funciones para limpieza y preprocesamiento de datos
-- visualization: Funciones para crear visualizaciones y gráficos
-- analysis: Funciones para análisis estadístico y reportes automáticos
+Módulos disponibles
+-------------------
+preprocessing : module
+    Funciones para limpieza, imputación de valores faltantes, detección y 
+    eliminación de outliers, y preprocesamiento general de datos.
+    
+visualization : module
+    Funciones para crear visualizaciones interactivas y gráficos exploratorios
+    utilizando Plotly, incluyendo histogramas, boxplots, heatmaps y más.
+    
+analysis : module
+    Funciones para análisis estadístico descriptivo, evaluación de completitud
+    de datos y reportes automáticos de calidad de datos.
 
-Autor: [Tu nombre]
+Notes
+-----
+Todas las funciones están documentadas siguiendo el formato NumPy docstring
+para máxima compatibilidad con herramientas de documentación automática.
+
+Examples
+--------
+>>> import libreria_modulo_1 as lm1
+>>> # Análisis de completitud
+>>> resultado = lm1.completitud_datos(df)
+>>> # Visualización interactiva
+>>> fig = lm1.plot_interactive_histogram(df, 'columna')
+>>> # Preprocesamiento
+>>> df_clean = lm1.impute_missing_values(df, method='knn')
+
+Autor: Estudiante de Data Science
 Versión: 1.0.0
 """
 

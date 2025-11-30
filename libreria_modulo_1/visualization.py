@@ -5,14 +5,11 @@ Funciones para crear gráficos y visualizaciones del análisis exploratorio
 
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import plotly.figure_factory as ff
 from scipy import stats
-from typing import List, Optional, Tuple, Union
+from typing import Optional
 
 
 def plot_interactive_histogram(df: pd.DataFrame, column: str, group_by: Optional[str] = None, 
@@ -20,13 +17,25 @@ def plot_interactive_histogram(df: pd.DataFrame, column: str, group_by: Optional
     """
     Histograma interactivo con línea de densidad y KDE, customizable por grupo.
     
-    Parameters:
-    df: DataFrame de pandas
-    column: columna a graficar
-    group_by: columna para agrupar (opcional)
-    add_kde: si agregar línea de densidad KDE
-    bins: número de bins
-    title: título personalizado
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas con los datos a graficar.
+    column : str
+        Nombre de la columna a graficar.
+    group_by : Optional[str], default None
+        Nombre de la columna para agrupar los datos (opcional).
+    add_kde : bool, default True
+        Si agregar línea de densidad KDE al histograma.
+    bins : int, default 30
+        Número de bins para el histograma.
+    title : Optional[str], default None
+        Título personalizado para el gráfico.
+        
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Figura interactiva de Plotly con el histograma.
     """
     if title is None:
         title = f'Distribución de la columna:{column}'
@@ -77,12 +86,23 @@ def plot_interactive_boxplot(df: pd.DataFrame, column: str, group_by: Optional[s
     """
     Boxplot interactivo con subgráficos por clase objetivo.
     
-    Parameters:
-    df: DataFrame de pandas
-    column: columna a graficar
-    group_by: columna para agrupar
-    target_class: columna de clase objetivo para subgráficos
-    title: título personalizado
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas con los datos a graficar.
+    column : str
+        Nombre de la columna numérica a graficar.
+    group_by : Optional[str], default None
+        Nombre de la columna para agrupar los datos.
+    target_class : Optional[str], default None
+        Nombre de la columna de clase objetivo para crear subgráficos.
+    title : Optional[str], default None
+        Título personalizado para el gráfico.
+        
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Figura interactiva de Plotly con el boxplot.
     """
     if title is None:
         title = f'Boxplot de {column}'
@@ -124,13 +144,25 @@ def plot_interactive_bar_horizontal(df: pd.DataFrame, column: str, top_n: int = 
     """
     Gráfico de barras horizontal ordenado por frecuencia descendente con porcentajes.
     
-    Parameters:
-    df: DataFrame de pandas
-    column: columna categórica a graficar
-    top_n: número de categorías más frecuentes a mostrar
-    title: título personalizado
-    show_percentage: si mostrar porcentajes además de frecuencias
-    color_scheme: esquema de colores ('viridis', 'plasma', 'blues', 'reds')
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas con los datos a graficar.
+    column : str
+        Nombre de la columna categórica a graficar.
+    top_n : int, default 20
+        Número de categorías más frecuentes a mostrar.
+    title : Optional[str], default None
+        Título personalizado para el gráfico.
+    show_percentage : bool, default True
+        Si mostrar porcentajes además de las frecuencias absolutas.
+    color_scheme : str, default 'viridis'
+        Esquema de colores a utilizar ('viridis', 'plasma', 'blues', 'reds').
+        
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Figura interactiva de Plotly con el gráfico de barras horizontal.
     """
     if title is None:
         title = f'Top {top_n} categorías más frecuentes - {column}'
@@ -185,12 +217,23 @@ def plot_interactive_line_timeseries(df: pd.DataFrame, y_column: str,
     """
     Gráfico de líneas para serie temporal (real o simulada).
     
-    Parameters:
-    df: DataFrame de pandas
-    y_column: columna del eje Y
-    x_column: columna del eje X (si None, usa el índice)
-    simulate_time: si True, simula variable de tiempo
-    title: título personalizado
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas con los datos a graficar.
+    y_column : str
+        Nombre de la columna para el eje Y (variable dependiente).
+    x_column : Optional[str], default None
+        Nombre de la columna para el eje X. Si es None, usa el índice.
+    simulate_time : bool, default True
+        Si True, simula una variable de tiempo cuando x_column es None.
+    title : Optional[str], default None
+        Título personalizado para el gráfico.
+        
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Figura interactiva de Plotly con el gráfico de líneas temporal.
     """
     df_copy = df.copy()
     
@@ -232,13 +275,31 @@ def plot_interactive_dot_comparison(df: pd.DataFrame, column: str, group1: str, 
     """
     Dot plot para comparar dos grupos con overlay.
     
-    Parameters:
-    df: DataFrame de pandas
-    column: columna numérica a comparar
-    group1: primer grupo
-    group2: segundo grupo
-    group_column: columna que contiene los grupos
-    title: título personalizado
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas con los datos a graficar.
+    column : str
+        Nombre de la columna numérica a comparar entre grupos.
+    group1 : str
+        Nombre del primer grupo a comparar.
+    group2 : str
+        Nombre del segundo grupo a comparar.
+    group_column : str
+        Nombre de la columna que contiene los grupos.
+    title : Optional[str], default None
+        Título personalizado para el gráfico.
+        
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Figura interactiva de Plotly con el dot plot de comparación.
+        
+    Raises
+    ------
+    ValueError
+        Si la columna de agrupación o numérica no existe, o si los grupos
+        especificados no se encuentran en los datos.
     """
     if title is None:
         title = f'Comparación Dot Plot: {group1} vs {group2}'
@@ -320,11 +381,21 @@ def plot_interactive_density_multiclass(df: pd.DataFrame, column: str, class_col
     """
     Gráfico de densidad con múltiples clases en diferentes colores.
     
-    Parameters:
-    df: DataFrame de pandas
-    column: columna numérica para densidad
-    class_column: columna de clases
-    title: título personalizado
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas con los datos a graficar.
+    column : str
+        Nombre de la columna numérica para calcular la densidad.
+    class_column : str
+        Nombre de la columna que contiene las clases.
+    title : Optional[str], default None
+        Título personalizado para el gráfico.
+        
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Figura interactiva de Plotly con las curvas de densidad por clase.
     """
     if title is None:
         title = f'Distribución de Densidad por Clase - {column}'
@@ -358,13 +429,31 @@ def plot_interactive_violin_swarm(df: pd.DataFrame, column: str, group_by: str,
     """
     Gráfico de violín interactivo con distribución de densidad.
     
-    Parameters:
-    df: DataFrame de pandas
-    column: columna numérica a graficar
-    group_by: columna de agrupación categórica
-    max_groups: número máximo de grupos a mostrar (los más frecuentes)
-    show_points: si mostrar puntos individuales dentro del violín
-    title: título personalizado
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas con los datos a graficar.
+    column : str
+        Nombre de la columna numérica a graficar.
+    group_by : str
+        Nombre de la columna de agrupación categórica.
+    max_groups : int, default 15
+        Número máximo de grupos a mostrar (selecciona los más frecuentes).
+    show_points : bool, default True
+        Si mostrar puntos individuales (outliers) dentro del violín.
+    title : Optional[str], default None
+        Título personalizado para el gráfico.
+        
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Figura interactiva de Plotly con los gráficos de violín.
+        
+    Raises
+    ------
+    ValueError
+        Si las columnas especificadas no existen o si la columna numérica
+        no es de tipo numérico.
     """
     # Validaciones
     if column not in df.columns:
@@ -519,14 +608,33 @@ def plot_interactive_correlation_heatmap(df: pd.DataFrame, method: str = 'pearso
     """
     Heatmap de correlación interactivo con anotaciones y selección de método.
     
-    Parameters:
-    df: DataFrame de pandas
-    method: método de correlación ('pearson', 'spearman', 'kendall')
-    annot: si mostrar anotaciones con valores de correlación
-    title: título personalizado
-    max_variables: número máximo de variables numéricas a incluir
-    show_only_significant: si mostrar solo correlaciones significativas
-    threshold: umbral mínimo de correlación para considerar significativa
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame de pandas con los datos para calcular correlaciones.
+    method : str, default 'pearson'
+        Método de correlación a utilizar ('pearson', 'spearman', 'kendall').
+    annot : bool, default True
+        Si mostrar anotaciones con los valores de correlación en el heatmap.
+    title : Optional[str], default None
+        Título personalizado para el gráfico.
+    max_variables : int, default 20
+        Número máximo de variables numéricas a incluir en el análisis.
+    show_only_significant : bool, default False
+        Si mostrar solo las correlaciones que superen el umbral de significancia.
+    threshold : float, default 0.3
+        Umbral mínimo de correlación absoluta para considerar significativa.
+        
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Figura interactiva de Plotly con el heatmap de correlación.
+        
+    Raises
+    ------
+    ValueError
+        Si el método de correlación no es válido, si no hay suficientes
+        variables numéricas, o si ocurre un error en el cálculo.
     """
     # Validaciones
     if method not in ['pearson', 'spearman', 'kendall']:
