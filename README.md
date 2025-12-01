@@ -177,53 +177,95 @@ clasificacion = resultado['clasificacion_variables']
 
 ### 📊 Tipos de Gráficos Disponibles
 
-1. **Histogramas Interactivos**
-   - Distribución de variables numéricas
-   - Líneas de densidad KDE superpuestas
-   - Agrupación por categorías
-   - Marginal boxplots
+### 📊 Ejemplos de Visualizaciones con Dataset CTG
 
-2. **Boxplots Comparativos**
-   - Comparación entre grupos
-   - Subgráficos por clase objetivo
-   - Detección visual de outliers
-   - Hover interactivo con estadísticas
+#### 1. **Histograma Interactivo - Frecuencia Cardíaca Basal**
 
-3. **Gráficos de Barras Horizontales**
-   - Top N categorías más frecuentes
-   - Porcentajes y frecuencias absolutas
-   - Colores personalizables
-   - Información estadística automática
+```python
+# Analizar distribución de frecuencia cardíaca basal por estado fetal
+fig = lm1.plot_interactive_histogram(df, 'LBE', 
+                                   title='Distribución de Frecuencia Cardíaca Basal',
+                                   save_plot=True)
+fig.show()
+```
 
-4. **Series Temporales**
-   - Líneas de tendencia
-   - Medias móviles
-   - Simulación de fechas cuando necesario
-   - Zoom y pan interactivo
+![Histograma LBE](plots/histogram_LBE_20251130_180327.jpg)
 
-5. **Dot Plots de Comparación**
-   - Comparación visual entre dos grupos
-   - Jitter para evitar solapamiento
-   - Líneas de media automáticas
-   - Hover con información detallada
+**💡 Análisis:** La frecuencia cardíaca basal (LBE) muestra distribuciones diferentes según el estado fetal. Los fetos normales tienden a concentrarse entre 120-160 latidos/min, mientras que los patológicos pueden mostrar bradicardia (<110) o taquicardia (>180), indicadores clave de sufrimiento fetal.
 
-6. **Curvas de Densidad Multiclase**
-   - Distribuciones por clase
-   - Colores diferenciados
-   - Estimación de densidad de kernel (KDE)
-   - Comparación visual de distribuciones
+#### 2. **Histograma Agrupado - Contracciones Uterinas por Clase**
 
-7. **Gráficos de Violín**
-   - Distribución completa de datos
-   - Boxplot interno integrado
-   - Líneas de media y mediana
-   - Control de outliers y puntos
+```python
+# Analizar contracciones uterinas agrupadas por clase diagnóstica
+fig = lm1.plot_interactive_histogram(df, 'UC', group_by='D',
+                                   title='Distribución de Contracciones Uterinas por Clase Diagnóstica',
+                                   save_plot=True)
+fig.show()
+```
 
-8. **Heatmaps de Correlación**
-   - Múltiples métodos de correlación
-   - Anotaciones automáticas
-   - Filtros de significancia
-   - Escalas de color adaptativas
+![Histograma UC por D](plots/histogram_UC_by_D_20251130_180329.jpg)
+
+**💡 Análisis:** Las contracciones uterinas (UC) muestran patrones distintivos según la clase diagnóstica (D). Esta visualización revela cómo la intensidad y frecuencia de contracciones se relaciona con diferentes condiciones obstétricas, permitiendo identificar patrones de riesgo.
+
+#### 3. **Boxplot Comparativo - Variable B por Estado Fetal**
+
+```python
+# Comparar variable B entre diferentes estados fetales
+fig = lm1.plot_interactive_boxplot(df, 'b', group_by='NSP',
+                                 title='Distribución de Variable B por Estado Fetal',
+                                 save_plot=True)
+fig.show()
+```
+
+![Boxplot B por NSP](plots/boxplot_b_by_NSP_20251130_180332.jpg)
+
+**💡 Análisis:** La variable B presenta diferencias significativas entre estados fetales normales, sospechosos y patológicos. Los boxplots revelan la mediana, cuartiles y outliers, permitiendo identificar valores atípicos que pueden indicar complicaciones fetales específicas.
+
+#### 4. **Boxplot con Subclasificación - Variable B por Clase D**
+
+```python
+# Analizar variable B con subclasificación por clase D
+fig = lm1.plot_interactive_boxplot(df, 'b', target_class='D',
+                                 title='Distribución de Variable B por Clase Diagnóstica D',
+                                 save_plot=True)
+fig.show()
+```
+
+![Boxplot B clase D](plots/boxplot_b_class_D_20251130_180334.jpg)
+
+**💡 Análisis:** Esta visualización con subgráficos por clase diagnóstica D muestra cómo la variable B se comporta dentro de cada categoría específica. Permite identificar patrones únicos de cada subclase y detectar variabilidades intra-grupo importantes para el diagnóstico diferencial.
+
+#### 5. **Heatmap de Correlación - Método Spearman**
+
+```python
+# Matriz de correlación con método de Spearman y filtro de significancia
+fig = lm1.plot_interactive_correlation_heatmap(df, method='spearman',
+                                             threshold=0.4,
+                                             title='Correlaciones Spearman Significativas (|r| ≥ 0.4)',
+                                             save_plot=True)
+fig.show()
+```
+
+![Correlación Spearman](plots/correlation_heatmap_spearman_threshold_0.4_20251130_180337.jpg)
+
+**💡 Análisis:** Las correlaciones de Spearman revelan relaciones no lineales entre variables CTG. El filtro de significancia (≥0.4) destaca las correlaciones más fuertes, identificando variables que tienden a cambiar juntas, lo que es crucial para entender las interacciones fisiológicas durante el monitoreo fetal.
+
+#### 6. **Heatmap de Correlación - Método Pearson**
+
+```python
+# Matriz de correlación con método de Pearson y filtro de significancia
+fig = lm1.plot_interactive_correlation_heatmap(df, method='pearson',
+                                             threshold=0.4,
+                                             title='Correlaciones Pearson Significativas (|r| ≥ 0.4)',
+                                             save_plot=True)
+fig.show()
+```
+
+![Correlación Pearson](plots/correlation_heatmap_pearson_threshold_0.4_20251130_180339.jpg)
+
+**💡 Análisis:** Las correlaciones de Pearson muestran relaciones lineales entre variables CTG. Al comparar con el método Spearman, se pueden identificar diferencias en los patrones de correlación, proporcionando una comprensión más completa de las relaciones entre variables en el contexto del monitoreo cardiotocográfico.
+
+
 
 ### 🎨 Características de las Visualizaciones
 
@@ -234,36 +276,32 @@ clasificacion = resultado['clasificacion_variables']
 - **Guardado automático**: Los gráficos se guardan automáticamente en `plots/`
 - **Múltiples formatos**: HTML interactivo y PNG estático
 
-### 💾 Guardado Automático de Gráficos
 
-**Todas las funciones de visualización incluyen guardado automático:**
-
-```python
-# Por defecto, los gráficos se guardan automáticamente
-fig = lm1.plot_interactive_histogram(df, 'columna')
-
-# Los archivos se guardan en plots/ con timestamp
-# Ejemplo: plots/histogram_columna_20251130_143022.html
-#         plots/histogram_columna_20251130_143022.png
-
-# Para desactivar el guardado automático
-fig = lm1.plot_interactive_histogram(df, 'columna', save_plot=False)
-```
-
-**Formatos guardados:**
-- **HTML**: Gráfico interactivo completo (recomendado para exploración)
-- **PNG**: Imagen estática de alta resolución (1200x800px, 2x escala)
 
 **Estructura de archivos:**
 ```
 plots/
-├── histogram_variable1_20251130_143022.html
-├── histogram_variable1_20251130_143022.png
-├── boxplot_variable2_by_categoria_20251130_143045.html
-├── boxplot_variable2_by_categoria_20251130_143045.png
-├── correlation_heatmap_pearson_20251130_143112.html
-└── correlation_heatmap_pearson_20251130_143112.png
+├── histogram_LB_by_NSP_20251130_143022.jpg
+├── boxplot_AC_by_NSP_20251130_143045.jpg
+├── dotplot_UC_normal_vs_patologico_20251130_143112.jpg
+├── correlation_heatmap_spearman_20251130_143156.jpg
+└── violin_FM_by_CLASS_20251130_143203.jpg
 ```
+
+### 📁 Organización de Archivos Generados
+
+Los gráficos se organizan automáticamente por tipo y contenido:
+
+| Tipo de Gráfico | Patrón de Nombre | Ejemplo |
+|------------------|------------------|---------|
+| Histograma | `histogram_{variable}[_by_{grupo}]_timestamp.jpg` | `histogram_LB_by_NSP_20251130_143022.jpg` |
+| Boxplot | `boxplot_{variable}[_by_{grupo}][_class_{clase}]_timestamp.jpg` | `boxplot_AC_by_NSP_20251130_143045.jpg` |
+| Barras | `horizontal_bar_{variable}_timestamp.jpg` | `horizontal_bar_CLASS_20251130_143067.jpg` |
+| Serie Temporal | `timeseries_{variable}_timestamp.jpg` | `timeseries_LBE_20251130_143089.jpg` |
+| Dot Plot | `dotplot_{variable}_{grupo1}_vs_{grupo2}_timestamp.jpg` | `dotplot_UC_normal_vs_patologico_20251130_143112.jpg` |
+| Densidad | `density_{variable}_by_{clase}_timestamp.jpg` | `density_DP_by_NSP_20251130_143134.jpg` |
+| Violín | `violin_{variable}_by_{grupo}_timestamp.jpg` | `violin_FM_by_CLASS_20251130_143156.jpg` |
+| Correlación | `correlation_heatmap_{metodo}[_threshold_{valor}]_timestamp.jpg` | `correlation_heatmap_spearman_20251130_143178.jpg` |
 
 
 ## 🧠 Recomendaciones Analíticas
