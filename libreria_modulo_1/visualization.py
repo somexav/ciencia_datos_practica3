@@ -32,7 +32,7 @@ def _ensure_plots_directory():
 
 def _save_plot(fig, plot_name: str, save_plot: bool = True):
     """
-    Guardar gráfico en múltiples formatos.
+    Guardar gráfico únicamente como JPG.
     
     Parameters
     ----------
@@ -46,7 +46,7 @@ def _save_plot(fig, plot_name: str, save_plot: bool = True):
     Returns
     -------
     dict
-        Diccionario con las rutas de los archivos guardados.
+        Diccionario con la ruta del archivo guardado.
     """
     if not save_plot:
         return {}
@@ -58,19 +58,12 @@ def _save_plot(fig, plot_name: str, save_plot: bool = True):
     saved_files = {}
     
     try:
-        # Guardar como HTML (interactivo)
-        html_path = os.path.join(plots_dir, f"{base_filename}.html")
-        fig.write_html(html_path)
-        saved_files['html'] = html_path
+        # Guardar únicamente como JPG
+        jpg_path = os.path.join(plots_dir, f"{base_filename}.jpg")
+        fig.write_image(jpg_path, format="jpeg", width=1200, height=800, scale=2)
+        saved_files['jpg'] = jpg_path
         
-        # Guardar como PNG (estático)
-        png_path = os.path.join(plots_dir, f"{base_filename}.png")
-        fig.write_image(png_path, width=1200, height=800, scale=2)
-        saved_files['png'] = png_path
-        
-        print(f"💾 Gráfico guardado:")
-        print(f"   📊 HTML interactivo: {html_path}")
-        print(f"   🖼️  PNG estático: {png_path}")
+        print(f"💾 Gráfico guardado como JPG: {jpg_path}")
         
     except Exception as e:
         print(f"⚠️  Error guardando gráfico: {str(e)}")
